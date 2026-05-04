@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1628"/>
+      <stop offset="55%" stop-color="#0a3461"/>
+      <stop offset="100%" stop-color="#0a66c2"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="78%" cy="22%" r="55%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.16)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+    <pattern id="dots" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.06)"/>
+    </pattern>
+  </defs>
+  <rect width="600" height="400" fill="url(#bg)"/>
+  <rect width="600" height="400" fill="url(#dots)"/>
+  <rect width="600" height="400" fill="url(#glow)"/>
+  <!-- LinkedIn 'in' mark, simplified, white -->
+  <g transform="translate(238 130)" fill="rgba(255,255,255,0.92)">
+    <rect width="124" height="124" rx="18"/>
+    <g fill="#0a3461">
+      <rect x="22" y="48" width="20" height="58" rx="2"/>
+      <circle cx="32" cy="32" r="11"/>
+      <path d="M58 48 h20 v8 q4 -10 22 -10 q22 0 22 26 v34 h-20 v-30 q0 -10 -10 -10 q-10 0 -14 8 v32 h-20 z"/>
+    </g>
+  </g>
+  <text x="300" y="312" text-anchor="middle"
+        font-family="ui-sans-serif, system-ui, -apple-system, Helvetica, Arial, sans-serif"
+        font-size="13" letter-spacing="3" fill="rgba(255,255,255,0.7)">FROM LINKEDIN</text>
+</svg>

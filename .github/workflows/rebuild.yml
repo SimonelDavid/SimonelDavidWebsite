@@ -1,0 +1,62 @@
+name: Periodic rebuild for LinkedIn updates
+
+# Triggers a fresh build every 4 hours so new LinkedIn posts get picked up
+# from the configured feed and baked into the static HTML.
+#
+# Pick ONE of the deploy paths below depending on where the site is hosted.
+
+on:
+  schedule:
+    - cron: "0 */4 * * *" # every 4 hours
+  workflow_dispatch: # also allow manual "Run workflow" button
+  push:
+    branches: [main]
+
+jobs:
+  # ───────────────────────────────────────────────────────────────────
+  # Path A: deployed on Vercel.
+  # Just hit the project's deploy hook — Vercel runs the build with
+  # LINKEDIN_FEED_URL from its own env settings. Faster + simpler.
+  # Required secrets: VERCEL_DEPLOY_HOOK_URL
+  # ───────────────────────────────────────────────────────────────────
+  vercel-deploy:
+    if: vars.DEPLOY_TARGET == 'vercel'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deploy hook
+        run: |
+          curl -X POST -fsSL "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
+
+  # ───────────────────────────────────────────────────────────────────
+  # Path B: pure static export → GitHub Pages / Cloudflare Pages / S3.
+  # Builds locally and pushes the /out folder to gh-pages.
+  # Required secrets: LINKEDIN_FEED_URL
+  # ───────────────────────────────────────────────────────────────────
+  static-build:
+    if: vars.DEPLOY_TARGET == 'static' || vars.DEPLOY_TARGET == ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - name: Build (with live LinkedIn feed if configured)
+        env:
+          LINKEDIN_FEED_URL: ${{ secrets.LINKEDIN_FEED_URL }}
+        run: npm run build
+      - name: Export static site
+        run: |
+          # If you set output: 'export' in next.config.mjs, the /out folder
+          # is generated automatically. Otherwise use `next export` (Next 13).
+          if [ -d "out" ]; then echo "static export ready"; else npx next export || true; fi
+      - uses: peaceiris/actions-gh-pages@v3
+        if: hashFiles('out/index.html') != ''
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
